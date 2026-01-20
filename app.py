@@ -77,7 +77,7 @@ window_hours = st.sidebar.selectbox(
 )
 
 end_time = df_m["timestamp"].max()
-start_time = df_m["timestamp"].min()
+start_time = df_m["timestamp"].min() - pd.Timedelta(hours=window_hours)
 
 df_m = df_m[df_m["timestamp"].between(start_time, end_time)]
 
