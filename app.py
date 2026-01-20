@@ -49,9 +49,6 @@ machine = st.sidebar.selectbox(
     sorted(df["machine_id"].unique())
 )
 
-df_full = df.copy()
-df_m = df_full[df_full["machine_id"] == machine]
-
 # ===============================
 # REGENERAR DADOS
 # ===============================
@@ -64,20 +61,31 @@ if st.sidebar.button("Regenerar dados"):
         st.cache_data.clear()
         st.rerun()
 
+df_full = df.copy()
+df_m = df_full[df_full["machine_id"] == machine]
+
 # ===============================
 # JANELA DE ANÁLISE
 # ===============================
 
 st.sidebar.subheader("⏱️ Janela de Análise")
 
-window_hours = st.sidebar.selectbox(
-    "Período",
-    [8, 24, 72, 168],  # 1 turno, 1 dia, 3 dias, 1 semana
-    format_func=lambda x: f"Últimas {x} horas"
+start_time = st.sidebar.date_input(
+    "Data inicial",
+    value=df_m["timestamp"].min(),
+    min_value=df_m["timestamp"].min(),
+    max_value=df_m["timestamp"].max()
 )
 
-end_time = df_m["timestamp"].max()
-start_time = df_m["timestamp"].min() - pd.Timedelta(hours=window_hours)
+end_time = st.sidebar.date_input(
+    "Data final",
+    value=df_m["timestamp"].max(),
+    min_value=df_m["timestamp"].min(),
+    max_value=df_m["timestamp"].max()
+)
+
+start_time = pd.Timestamp(start_time)
+end_time = pd.Timestamp(end_time)
 
 df_m = df_m[df_m["timestamp"].between(start_time, end_time)]
 
